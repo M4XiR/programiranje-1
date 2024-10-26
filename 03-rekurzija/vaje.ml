@@ -4,8 +4,13 @@
  Definirajte pomožno funkcijo za obračanje seznamov.
 [*----------------------------------------------------------------------------*)
 
-let rec reverse = ()
+let rec reverse_nav l = match l with
+ | []->[]
+ | glava :: rep -> reverse_nav rep @[glava]
 
+let rec reverse_rep_rec kup_za_obracanje nalozen_kup= match kup_za_obracanje with
+  | []->nalozen_kup
+  | x :: xs-> reverse_rep_rec xs (x :: nalozen_kup)
 (*----------------------------------------------------------------------------*]
  Funkcija [repeat x n] vrne seznam [n] ponovitev vrednosti [x]. Za neprimerne
  vrednosti [n] funkcija vrne prazen seznam.
