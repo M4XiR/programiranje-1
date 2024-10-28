@@ -69,18 +69,24 @@ let to_pound _ = ()
  Nato napišite testni primer, ki bi predstavljal `[5; true; false; 7]`.
 [*----------------------------------------------------------------------------*)
 
-type intbool_list 
+type intbool_list =
+| Nil
+| Int of (int * intbool_list)
+| Bool of (bool * intbool_list)
 
-let test = ()
-
+let test = 
+  Int (5 ,Bool (true, Bool (false, Int (7, Nil))))
+  
 (*----------------------------------------------------------------------------*
  Funkcija `intbool_map f_int f_bool ib_list` preslika vrednosti `ib_list` v nov
  `intbool_list` seznam, kjer na elementih uporabi primerno od funkcij `f_int`
  oz. `f_bool`.
 [*----------------------------------------------------------------------------*)
 
-let rec intbool_map _ _ _ = ()
-
+let rec intbool_map f_int f_bool = function
+|Nil -> Nil
+|Int (i,ib_list)-> Int(f_int i, intbool_map f_int f_bool ib_list)
+|Bool (b,ib_list)-> Bool(f_bool b, intbool_map f_int f_bool ib_list)
 (*----------------------------------------------------------------------------*
  Funkcija `intbool_reverse` obrne vrstni red elementov `intbool_list` seznama.
  Funkcija je repno rekurzivna.
