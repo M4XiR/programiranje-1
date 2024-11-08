@@ -5,10 +5,6 @@
 (*----------------------------------------------------------------------------*
  ## Vektorji
 [*----------------------------------------------------------------------------*)
-let i = [1.;0.;0.]
-let j = [0.;1.;0.]
-let k = [0.;0.;1.]
-
 (*----------------------------------------------------------------------------*]
 Napišite funkcijo `razteg : float -> vector -> vector`, ki vektor, 
 predstavljen s seznamom števil s plavajočo vejico, pomnoži z danim skalarjem.
@@ -94,7 +90,12 @@ let primer_html_1 = ovij "h1" "Hello, world!"
  ustrezno število presledkov.
 [*----------------------------------------------------------------------------*)
 
-let zamakni st_zamik niz = 
+let zamakni n vsebina =
+  let presledki = String.make n ' ' in
+  vsebina
+  |> String.split_on_char '\n'
+  |> List.map (String.cat presledki)
+  |> String.concat "\n"
 
 let primer_html_2 = zamakni 4 "Hello,\nworld!"
 (* val primer_html_2 : string = "    Hello,\n    world!" *)
