@@ -7,22 +7,40 @@ def concat {A : Type} : List A → List A → List A :=
 #check (concat ["a", "b"] ["c", "d"])
 
 def reverse {A : Type} : List A → List A :=
-  sorry
+  fun sez =>
+    match sez with
+    | [] => []
+    | x :: xs => concat (reverse xs) [x]
 
 
 #check (reverse ["a", "b", "c", "d"])
 
 def length {A : Type} : List A → Nat :=
-  sorry
+  fun sez =>
+  match sez with
+  | [] => 0
+  | x :: xs => 1 + length xs
 
 
 #check (length ["a", "b", "c", "d"])
 
 theorem trd1  {A : Type} {x : A} : reverse [x] = [x] :=
-  sorry
+  by
+    simp [reverse]
+    simp [concat]
+
 
 theorem trd2 {A : Type} {xs ys : List A} : length (concat xs ys) = length xs + length ys :=
-  sorry
+  by
+    induction xs with
+    | nil =>
+    simp[concat]
+    simp[length]
+    | cons hd tl ip=>
+    simp[concat]
+    simp[length]
+    simp[ip]
+    rw[Nat.add_assoc]
 
 -- Tega poznamo že iz predavanj
 theorem trd3 {A : Type} {xs : List A} : concat xs [] = xs :=
@@ -35,10 +53,29 @@ theorem trd3 {A : Type} {xs : List A} : concat xs [] = xs :=
       rw [ih]
 
 theorem trd4 {A : Type} {xs ys zs : List A} : concat (concat xs ys) zs = concat xs (concat ys zs) :=
-  sorry
+  by
+    induction xs with
+    |nil =>
+      simp[concat]
+    |cons hd tl tlith =>
+      simp[concat]
+      rw[tlith]
+
+--theorem komut_concat_nil {A:type} {[] x  : List A} concat [] x = concat x []:=
+  --sorry
 
 theorem trd5 {A : Type} {xs ys : List A} : reverse (concat xs ys) = concat (reverse ys) (reverse xs) :=
-  sorry
+  by
+    induction xs with
+    |nil =>
+    simp[concat]
+    simp[reverse]
+    simp[trd3]
+    |cons hd tl tlith=>
+    simp[concat]
+    simp[reverse]
+    rw[tlith]
+    simp[trd4]
 
 theorem trd6 {A : Type} {xs : List A} : length (reverse xs) = length xs :=
   sorry
@@ -89,10 +126,23 @@ theorem max_comm {a b : Nat} : Nat.max a b = Nat.max b a :=
   sorry
 
 def mirror {A : Type} : tree A → tree A :=
-  sorry
+  fun t =>
+    match t with
+    |tree.empty => tree.empty
+    |tree.node x l r => tree.node x (mirror r) (mirror l)
 
 theorem mirror_depth {A : Type} {t : tree A} : depth (mirror t) = depth t :=
-  sorry
+  by
+    induction t with
+      |empty =>
+      simp[mirror]
+      |node x l r ihl ihr =>
+      simp[mirror]
+      simp[depth]
+      rw[ihl]
+      rw[ihr]
+      rw[max_comm]
+
 
 theorem mirror_mirror {A : Type} {t : tree A} : mirror (mirror t) = t :=
   sorry
