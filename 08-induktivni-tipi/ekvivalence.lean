@@ -61,9 +61,6 @@ theorem trd4 {A : Type} {xs ys zs : List A} : concat (concat xs ys) zs = concat 
       simp[concat]
       rw[tlith]
 
---theorem komut_concat_nil {A:type} {[] x  : List A} concat [] x = concat x []:=
-  --sorry
-
 theorem trd5 {A : Type} {xs ys : List A} : reverse (concat xs ys) = concat (reverse ys) (reverse xs) :=
   by
     induction xs with
