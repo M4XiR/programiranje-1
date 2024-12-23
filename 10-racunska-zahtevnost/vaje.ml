@@ -2,29 +2,44 @@
 Natančno definirajte pogoje, da funkcija `f` uredi seznam. 
 *)
 
-(*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*]
- Urejanje z Vstavljanjem
-[*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*)
-
-(*----------------------------------------------------------------------------*]
- Funkcija [insert y xs] vstavi [y] v že urejen seznam [xs] in vrne urejen
- seznam. 
- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- # insert 9 [0; 2];;
- - : int list = [0; 2; 9]
- # insert 1 [4; 5];;
- - : int list = [1; 4; 5]
- # insert 7 [];;
- - : int list = [7]
-[*----------------------------------------------------------------------------*)
-
-
+let rec rev xs =
+  match xs with
+  | [] -> []
+  | x::xs'-> (rev xs') @ [x]
+  (*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*]
+  Urejanje z Vstavljanjem
+  [*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*)
+  
+  (*----------------------------------------------------------------------------*]
+  Funkcija [insert y xs] vstavi [y] v že urejen seznam [xs] in vrne urejen
+  seznam. 
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  
+  # insert 9 [0; 2];;
+  - : int list = [0; 2; 9]
+  # insert 1 [4; 5];;
+  - : int list = [1; 4; 5]
+  # insert 7 [];;
+  - : int list = [7]
+  
+  [*----------------------------------------------------------------------------*)
+  let rec insert  y sez=
+    match sez with
+    |[]->y::[]
+    |x::xs-> if y <x then y::x::xs else x::insert y xs
+  
+  
+   
+ 
 (*----------------------------------------------------------------------------*]
  Prazen seznam je že urejen. Funkcija [insert_sort] uredi seznam tako da
  zaporedoma vstavlja vse elemente seznama v prazen seznam.
 [*----------------------------------------------------------------------------*)
 
-
+let rec insert_sort sez =
+  match sez with
+  | [] -> []
+  | x::xs -> insert x (insert_sort xs)
 
 (*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*]
  Urejanje z Izbiranjem

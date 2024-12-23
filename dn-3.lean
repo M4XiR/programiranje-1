@@ -8,16 +8,30 @@ set_option autoImplicit false
  dokažite, da zanjo velja znana enakost (najprej v obliki, ki ne zahteva
  deljenja, nato pa še v običajni obliki).
 ------------------------------------------------------------------------------/
-
 def vsota_prvih : Nat → Nat :=
+fun n =>match n with
+  |Nat.zero=> 0
+  |Nat.succ k=> (vsota_prvih k) + Nat.succ k
 
-  sorry
+theorem gauss : (n : Nat) → 2 * vsota_prvih n = n * (n + 1) :=
+  by
+    intro n
+    induction n with
+    |zero => simp [vsota_prvih]
+    |succ h ih =>
+    simp [vsota_prvih]
+    rw [Nat.mul_add, Nat.add_mul, Nat.one_mul, ih]
+    simp [Nat.mul_add, Nat.add_assoc]
+    rw [Nat.add_comm, Nat.mul_comm, Nat.add_assoc]
+    simp [Nat.add_comm]
 
-theorem gauss : (n : Nat) → 2 * vsota_prvih n = n * (n + 1) := by
-  sorry
+
+
 
 theorem cisto_pravi_gauss : (n : Nat) → vsota_prvih n = (n * (n + 1)) / 2 := by
-  sorry
+  intro n
+  calc vsota_prvih n = 2 *(vsota_prvih n) / 2 := by simp
+       _ = n * (n + 1) / 2  := by rw [gauss]
 
 /------------------------------------------------------------------------------
  ## Vektorji
@@ -41,13 +55,19 @@ def stakni : {A : Type} → {m n : Nat} → Vektor A m → Vektor A n → Vektor
   | .sestavljen x xs' => by rw [Nat.add_right_comm]; exact Vektor.sestavljen x (stakni xs' ys)
 
 def obrni : {A : Type} → {n : Nat} → Vektor A n → Vektor A n :=
-  sorry
+  fun vec => match vec with
+  | Vektor.prazen => Vektor.prazen
+  | Vektor.sestavljen x xs => stakni (obrni xs) (Vektor.sestavljen x Vektor.prazen)
 
-def glava : sorry :=
-  sorry
 
-def rep : sorry :=
-  sorry
+def glava : {A : Type} → {n : Nat} → Vektor A n → Option A :=
+  fun vec => match vec with
+  | Vektor.prazen => Option.none
+  | Vektor.sestavljen x _ => Option.some x
+
+
+def rep : {A : Type} → {n : Nat} → Vektor A n → Option A :=
+  fun vec => glava (obrni vec)
 
 /------------------------------------------------------------------------------
  ## Predikatni račun
@@ -60,16 +80,35 @@ def rep : sorry :=
 
 theorem forall_implies : {A : Type} → {P Q : A → Prop} →
   (∀ x, (P x → Q x)) → (∀ x, P x) → (∀ x, Q x) := by
-  sorry
+  intro x P Q t1 t2 xt
+  apply t1
+  apply t2
+
+
 
 theorem forall_implies' : {A : Type} → {P : Prop} → {Q : A → Prop} →
   (∀ x, (P → Q x)) ↔ (P → ∀ x, Q x) := by
-  sorry
+  intro x P xP
+  constructor
+
+  intro t1 P_1 x_1
+  apply t1
+  assumption
+
+  intro t2 P_2 x_2
+  apply t2
+  assumption
+
 
 theorem paradoks_pivca :
   {G : Type} → {P : G → Prop} →
   (g : G) →  -- (g : G) pove, da je v gostilni vsaj en gost
   ∃ (p : G), (P p → ∀ (x : G), P x) := by
+  intro Ljudje_v_gostilni    Ce_je_gost_v_gostilni    Gost_iz_gostilne
+  constructor
+
+  intro gost xl
+
   sorry
 
 /------------------------------------------------------------------------------
@@ -111,14 +150,52 @@ def elementi' : {A : Type} → Drevo A → List A :=
 theorem zrcali_zrcali :
   {A : Type} → (t : Drevo A) →
   zrcali (zrcali t) = t := by
-  sorry
+  intro A t
+  induction t with
+  | prazno=>
+    simp [zrcali]
+  | sestavljeno h A1 A2 ih1 ih2 =>
+    simp [zrcali]
+    simp [ih1, ih2]
+
 
 theorem visina_zrcali :
   {A : Type} → (t : Drevo A) →
   visina (zrcali t) = visina t := by
-  sorry
+  intro A t
+  induction t with
+  | prazno=>
+  simp [zrcali]
+  | sestavljeno h A1 A2 ih1 ih2 =>
+  simp [visina]
+  simp [ih1, ih2]
+  simp [Nat.max_comm]
+
+theorem elementi'_aux_pomozno : {A : Type} → (h1 h2: Drevo A) →  (tp : A) →
+  (elementi'.aux h1 [] ++ tp :: elementi'.aux h2 []) = elementi'.aux h1 (tp :: elementi'.aux h2 []) :=
+    by
+    intro A h1
+    induction h1 with
+    | prazno =>
+    intro h2 tp
+    simp [elementi'.aux]
+    | sestavljeno l x d ih_l ih_d =>
+    intro h2 tp
+    simp [elementi'.aux]
+    simp [← ih_d]
+    rw[← elementi'.aux]
+    rw [List.bind_assoc]
+
 
 theorem elementi_elementi' :
   {A : Type} → (t : Drevo A) →
   elementi t = elementi' t := by
-  sorry
+  intro A t
+  induction t with
+  | prazno=>
+  simp [elementi,elementi', elementi'.aux]
+  | sestavljeno h1 tp h2 ih1 ih2 =>
+  simp [elementi, elementi']
+  rw[ih1, ih2]
+  simp [elementi'.aux, elementi']
+  simp[elementi'_aux_pomozno]
