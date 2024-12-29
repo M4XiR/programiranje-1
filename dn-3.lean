@@ -101,12 +101,10 @@ theorem forall_implies' : {A : Type} → {P : Prop} → {Q : A → Prop} →
 
 
 theorem paradoks_pivca :
-  {G : Type} → {P : G → Prop} →
-  (g : G) →  -- (g : G) pove, da je v gostilni vsaj en gost
-  ∃ (p : G), (P p → ∀ (x : G), P x) := by
+  {G : Type} → {P : G → Prop} → (g : G) →  ∃ (p : G), (P p → ∀ (x : G), P x) :=
+  by
   intro Ljudje_v_gostilni    Ce_je_gost_v_gostilni    Gost_iz_gostilne
   constructor
-
   intro gost xl
 
   sorry
@@ -171,31 +169,29 @@ theorem visina_zrcali :
   simp [ih1, ih2]
   simp [Nat.max_comm]
 
-theorem elementi'_aux_pomozno : {A : Type} → (h1 h2: Drevo A) →  (tp : A) →
-  (elementi'.aux h1 [] ++ tp :: elementi'.aux h2 []) = elementi'.aux h1 (tp :: elementi'.aux h2 []) :=
-    by
-    intro A h1
-    induction h1 with
-    | prazno =>
-    intro h2 tp
+theorem elementi'_aux_pomozno2 : {A : Type} →  (t : Drevo A) →  (a : List A) →
+  elementi'.aux t [] ++ a = elementi'.aux t a:=
+  by
+    intros A a acc
+    induction acc with
+    |nil =>
     simp [elementi'.aux]
-    | sestavljeno l x d ih_l ih_d =>
-    intro h2 tp
-    simp [elementi'.aux]
-    simp [← ih_d]
-    rw[← elementi'.aux]
-    rw [List.bind_assoc]
+    |cons x xs ih =>
+    calc  elementi'.aux a [] ++ x :: xs = (elementi'.aux a [] ++ [x]) ++ xs := by simp
+          _ = (elementi'.aux a [x]) ++ xs := by rw [ih]
+    sorry
 
 
-theorem elementi_elementi' :
-  {A : Type} → (t : Drevo A) →
+
+
+theorem elementi_elementi' : {A : Type} → (t : Drevo A) →
   elementi t = elementi' t := by
-  intro A t
+  intros A t
   induction t with
   | prazno=>
   simp [elementi,elementi', elementi'.aux]
-  | sestavljeno h1 tp h2 ih1 ih2 =>
+  | sestavljeno t h1 h2 ih1 ih2 =>
   simp [elementi, elementi']
   rw[ih1, ih2]
   simp [elementi'.aux, elementi']
-  simp[elementi'_aux_pomozno]
+  simp [elementi'_aux_pomozno2]

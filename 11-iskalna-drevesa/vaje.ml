@@ -5,7 +5,9 @@
  bodisi prazna, bodisi pa vsebujejo podatek in imajo dve (morda prazni)
  poddrevesi. Na tej točki ne predpostavljamo ničesar drugega o obliki dreves.
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
-
+type 'a drevo =
+  | Prazno
+  | Sestavljeno of ('a* ('a drevo)  * ('a drevo))
 
 (*----------------------------------------------------------------------------*]
  Definirajmo si testni primer za preizkušanje funkcij v nadaljevanju. Testni
@@ -19,6 +21,9 @@
 [*----------------------------------------------------------------------------*)
 
 
+let leaf a = Sestavljeno (a, Prazno, Prazno)
+
+let testni = Sestavljeno (1, leaf 2, Sestavljeno (3 , leaf 4 , leaf 5))
 (*----------------------------------------------------------------------------*]
  Funkcija [mirror] vrne prezrcaljeno drevo. Na primeru [test_tree] torej vrne
           5
@@ -32,7 +37,9 @@
  Node (Node (Node (Empty, 11, Empty), 7, Node (Empty, 6, Empty)), 5,
  Node (Empty, 2, Node (Empty, 0, Empty)))
 [*----------------------------------------------------------------------------*)
-
+let rec mirror a = match a with
+| Prazno -> Prazno
+| Sestavljeno (a , l, d) -> Sestavljeno (a , mirror d, mirror l)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [height] vrne višino oz. globino drevesa, funkcija [size] pa število
@@ -43,7 +50,13 @@
  # size test_tree;;
  - : int = 6
 [*----------------------------------------------------------------------------*)
+let rec height a = match a with
+     |Prazno -> 0
+     |Sestavljeno (_, l, d) -> 1 + ( max (height l) ( height d) )
 
+let rec size a = match a with
+     |Prazno -> 0
+     |Sestavljeno (_, l , d)-> 1 + size l + size d
 
 (*----------------------------------------------------------------------------*]
  Funkcija [map_tree f tree] preslika drevo v novo drevo, ki vsebuje podatke
@@ -54,7 +67,10 @@
  Node (Node (Node (Empty, false, Empty), false, Empty), true,
  Node (Node (Empty, true, Empty), true, Node (Empty, true, Empty)))
 [*----------------------------------------------------------------------------*)
-
+let rec map_tree f a=
+     match a with
+     | Prazno -> Prazno
+     | Sestavljeno (e , l ,d) -> Sestavljeno(f e, map_tree f l, map_tree f d)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [list_of_tree] pretvori drevo v seznam. Vrstni red podatkov v seznamu

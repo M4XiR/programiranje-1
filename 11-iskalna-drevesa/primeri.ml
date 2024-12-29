@@ -19,7 +19,7 @@ end
 module MnozicaPrekIskalnihDreves : MNOZICA = struct
   type 'a t = Prazno | Sestavljeno of 'a t * 'a * 'a t
 
-  (* type comparison = Equal | Less | Greater *)
+  (* type comparison = Equal | Less | Greater *) 
 
   let rec vsebuje mn x =
     match mn with
