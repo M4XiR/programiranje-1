@@ -245,12 +245,11 @@ let primer_fold_left_no_acc =
 [*----------------------------------------------------------------------------*)
 
 let apply_sequence funk c n = 
-  let rec aux x n acc=
-  match n with
-  | 0 -> List.rev acc
-  | m -> aux (funk x) (m - 1) (x::acc)
+  let rec aux trenutna l acc=
+    if l > n then List.rev acc
+    else aux (funk trenutna) (l + 1) (trenutna::acc)
   in
-  aux c n []
+  aux c 0 []
 
 let primer_apply_sequence_1 = apply_sequence (fun x -> x * x) 2 5
 (* val primer_apply_sequence_1 : int list = [2; 4; 16; 256; 65536; 4294967296] *)
@@ -268,7 +267,10 @@ let primer_apply_sequence_2 = apply_sequence (fun x -> x * x) 2 (-5)
   Pri tem ne smete uporabiti vgrajene funkcije `List.filter`.
 [*----------------------------------------------------------------------------*)
 
-let rec filter _ _ = ()
+let rec filter funk sez = 
+  match sez with
+  | [] -> []
+  | x::xs -> if funk x then x :: (filter funk xs) else filter funk xs
 
 let primer_filter = filter ((<)3) [0; 1; 2; 3; 4; 5]
 (* val primer_filter : int list = [4; 5] *)
@@ -284,7 +286,10 @@ let primer_filter = filter ((<)3) [0; 1; 2; 3; 4; 5]
   Pri tem ne smete uporabiti vgrajene funkcije `List.find` ali podobnih.
 [*----------------------------------------------------------------------------*)
 
-let rec exists _ _ = ()
+let rec exists funk sez = 
+  match sez with
+  | [] -> false
+  | x::xs -> if funk x then true else exists funk xs
 
 let primer_exists_1 = exists ((<) 3) [0; 1; 2; 3; 4; 5]
 (* val primer_exists_1 : bool = true *)
@@ -303,7 +308,13 @@ let primer_exists_2 = exists ((<) 8) [0; 1; 2; 3; 4; 5]
   Pri tem ne smete uporabiti vgrajene funkcije `List.find` ali podobnih.
 [*----------------------------------------------------------------------------*)
 
-let rec first _ _ _ = ()
+let  first funk default sez = 
+  let rec aux sez1=
+  match sez1 with
+  | [] -> default
+  | x::xs -> if funk x then x else aux xs
+  in
+  aux sez
 
 let primer_first_1 = first ((<) 3) 0 [1; 1; 2; 3; 5; 8]
 (* val primer_first_1 : int = 5 *)

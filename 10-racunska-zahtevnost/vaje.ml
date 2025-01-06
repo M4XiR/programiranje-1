@@ -23,10 +23,10 @@ let rec rev xs =
   - : int list = [7]
   
   [*----------------------------------------------------------------------------*)
-  let rec insert  y sez=
+  let rec insert y sez=
     match sez with
     |[]->y::[]
-    |x::xs-> if y <x then y::x::xs else x::insert y xs
+    |x::xs-> if y < x then y::x::xs else x::insert y xs
   
   
    
