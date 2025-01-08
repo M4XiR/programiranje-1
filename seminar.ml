@@ -1,0 +1,1 @@
+let je_prastevilo stevilo = () 
