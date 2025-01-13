@@ -44,15 +44,51 @@ module type TAPE = sig
   val print : t -> unit
 end
 
-module Tape : TAPE = struct
-  type t = unit
+let string_to_list str = List.init (String.length str) (String.get str)
 
-  let make _ = ()
-  let move _ _ = ()
-  let read _ = ' '
-  let write _ _ = ()
-  let print _ = ()
+let test1 = string_to_list "brazilija"
+
+module Tape : TAPE = struct
+  type t = {levo : char list; glava : char; desno : char list}
+  
+  
+
+  let make (str : string) = 
+    let sez = string_to_list str in 
+    match  sez with
+  | [] -> {levo = []; glava = ' '; desno = []}
+  | x::xs -> {levo = []; glava = x; desno = xs}
+
+  let move (smer : direction) (tape : t) = 
+    match smer with
+    |Left -> 
+      (match tape.levo with
+      | [] -> {levo = []; glava= ' '; desno = tape.glava :: tape.desno}
+      | x::xs -> {levo = xs ; glava = x; desno = tape.glava :: tape.desno})
+      
+    |Right -> 
+      (match tape.desno with
+      |[] -> {levo = tape.glava :: tape.levo; glava = ' '; desno = []}
+      |x::xs -> {levo = tape.glava :: tape.levo; glava = x; desno = xs})
+      
+  let read tape = tape.glava
+
+  let write char tape = {tape with glava = char}
+
+  let print tape =
+    let rec odstrani_zacetne_presledke = function
+      | ' ' :: xs -> odstrani_zacetne_presledke xs
+      | xs -> xs
+    in
+    let levi_sez = odstrani_zacetne_presledke (List.rev tape.levo) in
+    let celoten_sez = levi_sez @ [tape.glava] @ tape.desno in
+    let sez_to_str = String.concat "" (List.map (String.make 1) celoten_sez) in
+    let pozicija_glave = String.length (String.concat "" (List.map (String.make 1) levi_sez)) in
+    let kazalec =  String.make pozicija_glave ' ' ^ "^" in
+    print_endline sez_to_str; 
+    print_endline kazalec
 end
+
 
 let primer_trak = Tape.(
   make "ABCDE"
@@ -63,7 +99,7 @@ let primer_trak = Tape.(
   |> move Right
   |> move Right
   |> write '!'
-  |> print
+  |> print 
 )
 (*
 AB!DE
@@ -103,11 +139,35 @@ module type MACHINE = sig
 end
 
 module Machine : MACHINE = struct
-  type t = unit
-  let make _ _ = ()
-  let initial _ = ""
-  let add_transition _ _ _ _ _ _ = ()
-  let step _ _ _ = None
+  type transition = state * char * (state * char * direction)
+  type t = {initial_state : state; states : state list; transitions : transition list}
+
+  
+  let make initial_state states =
+    {initial_state; states; transitions= []}
+
+  let initial machine = machine.initial_state
+
+  let add_transition state char next_state write_char direction machine =
+    let new_transition = (state, char, (next_state, write_char, direction)) in
+    {machine with transitions = new_transition::machine.transitions}
+
+  
+  let find_transition state char transitions =
+    let rec aux = function
+      | [] -> None
+      | (s, c, action) :: xs ->
+          if s = state && c = char then Some action else aux xs
+    in
+    aux transitions
+
+  let step machine current_state tape =
+    let read_char = Tape.read tape in
+    match find_transition current_state read_char machine.transitions with
+    | None -> None  
+    | Some (next_state, write_char, direction) ->
+        let updated_tape = tape |> Tape.write write_char |> Tape.move direction in
+        Some (next_state, updated_tape)
 end
 
 (*----------------------------------------------------------------------------*
@@ -136,7 +196,17 @@ let binary_increment =
  izvajanja.
 [*----------------------------------------------------------------------------*)
 
-let slow_run _ _ = ()
+let slow_run machine input =
+  let rec aux state tape =
+    Tape.print tape;
+    print_endline state;
+    match Machine.step machine state tape with
+    | None -> () 
+    | Some (next_state, next_tape) -> aux next_state next_tape
+  in
+  let tape = Tape.make input in
+  aux (Machine.initial machine) tape
+
 
 let primer_slow_run =
   slow_run binary_increment "1011"
