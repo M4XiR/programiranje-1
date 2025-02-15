@@ -1,4 +1,4 @@
-(* ========== Vaja 4: Iskalna Drevesa  ========== *)
+(* ========== Vaje 11: Iskalna Drevesa  ========== *)
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Ocaml omogoča enostavno delo z drevesi. Konstruiramo nov tip dreves, ki so
@@ -8,6 +8,7 @@
 type 'a drevo =
   | Prazno
   | Sestavljeno of ('a* ('a drevo)  * ('a drevo))
+
 
 (*----------------------------------------------------------------------------*]
  Definirajmo si testni primer za preizkušanje funkcij v nadaljevanju. Testni

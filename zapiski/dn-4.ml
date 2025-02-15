@@ -21,11 +21,11 @@ type state = string
 
  - `t` tip v obe smeri neomejenih trakov in glavo na danem mestu;
  - `make`, ki naredi nov trak z znaki iz niza ter glavo na prvem znaku;
+ - `print`, ki izpiše vsebino traku (brez presledkov na začetku in koncu) ter
+ pod njim z `^` označi mesto glave;
  - `read`, ki vrne znak pod glavo;
  - `write`, ki pod glavo zapiše dani znak;
- - `move`, ki glavo premakne v dano smer;
- - `print`, ki izpiše vsebino traku (brez presledkov na začetku in koncu) ter
- pod njim z `^` označi mesto glave.
+ - `move`, ki glavo premakne v dano smer.
 
  Zadnji dve funkciji naj vrneta nov trak, obstoječega pa naj pustita
  nespremenjenega.
@@ -38,10 +38,10 @@ module type TAPE = sig
   type t
 
   val make : string -> t
-  val move : direction -> t -> t
-  val read : t -> char
-  val write : char -> t -> t
   val print : t -> unit
+  val read : t -> char
+  val move : direction -> t -> t
+  val write : char -> t -> t
 end
 
 let string_to_list str = List.init (String.length str) (String.get str)
@@ -324,7 +324,7 @@ let binary_increment' =
     for_character ' ' @@ switch_and_move "carry" Left
   ]
   |> for_state "carry" [
-    for_character '1' @@ switch_and_move "carry" Left;
+    for_character '1' @@ write_and_move '0' Left;
     for_characters "0 " @@ write_switch_and_move '1' "done" Left
   ]   
 (* val binary_increment' : Machine.t = <abstr> *)
